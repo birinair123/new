@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Data Ingestion{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="bi bi-database-fill-gear"></i> Data Ingestion
+                ⚙ Data Ingestion
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -21,22 +19,22 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
+                            Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'records' %}active{% endif %}" href="{{ url_for('records') }}">
-                            <i class="bi bi-table"></i> Records
+                            Records
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'ingest' %}active{% endif %}" href="{{ url_for('ingest') }}">
-                            <i class="bi bi-cloud-upload"></i> Ingest
+                            Ingest
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'jobs' %}active{% endif %}" href="{{ url_for('jobs') }}">
-                            <i class="bi bi-list-task"></i> Jobs
+                            Jobs
                         </a>
                     </li>
                 </ul>
@@ -65,7 +63,6 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
