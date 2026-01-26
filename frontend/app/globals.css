@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mobile-first design tokens */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
+/* Base styles */
+html {
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+/* Score badge colors */
+.score-high {
+  @apply bg-green-100 text-green-800;
+}
+.score-medium {
+  @apply bg-yellow-100 text-yellow-800;
+}
+.score-low {
+  @apply bg-gray-100 text-gray-600;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-100;
+}
+
+/* Touch-friendly buttons */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-3 text-sm font-medium rounded-lg transition-colors;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  min-height: 44px; /* iOS touch target */
+}
+
+.btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500;
+}
+
+.btn-linkedin {
+  @apply bg-linkedin text-white hover:bg-blue-700 focus:ring-blue-500;
+}
+
+/* Input styles */
+.input {
+  @apply w-full px-4 py-3 text-base rounded-lg border border-gray-300;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  min-height: 44px;
+}
+
+/* Tag styles */
+.tag {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+/* Timeline styles */
+.timeline-item {
+  @apply relative pl-8 pb-6 border-l-2 border-gray-200 last:pb-0;
+}
+
+.timeline-dot {
+  @apply absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-gray-300;
+}
+
+.timeline-dot-meeting {
+  @apply border-primary-500 bg-primary-50;
+}
+
+.timeline-dot-email-in {
+  @apply border-green-500 bg-green-50;
+}
+
+.timeline-dot-email-out {
+  @apply border-blue-500 bg-blue-50;
+}
+
+/* Navigation */
+.nav-item {
+  @apply flex flex-col items-center justify-center py-2 px-4 text-gray-500;
+  @apply hover:text-primary-600 transition-colors;
+}
+
+.nav-item.active {
+  @apply text-primary-600;
+}
+
+/* Pull to refresh indicator */
+.ptr-indicator {
+  @apply flex items-center justify-center h-12 text-gray-400;
+}
+
+/* Loading skeleton */
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Empty state */
+.empty-state {
+  @apply flex flex-col items-center justify-center py-12 px-4 text-center;
+}
+
+/* Safe area padding for fixed elements */
+.safe-bottom {
+  padding-bottom: calc(var(--safe-area-inset-bottom) + 1rem);
+}

@@ -1,0 +1,4 @@
+# Windows OST Extractor Requirements
+# Install on Windows with: pip install -r requirements.txt
+
+pywin32==306
