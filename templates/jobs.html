@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Ingestion Jobs - Data Ingestion{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-list-task"></i> Ingestion Jobs</h1>
+    <a href="{{ url_for('ingest') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> New Ingestion
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        {% if jobs %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Filename</th>
+                        <th>Status</th>
+                        <th>Records Processed</th>
+                        <th>Records Failed</th>
+                        <th>Started</th>
+                        <th>Completed</th>
+                        <th>Error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td>{{ job.id }}</td>
+                        <td><strong>{{ job.filename }}</strong></td>
+                        <td>
+                            {% if job.status == 'completed' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Completed</span>
+                            {% elif job.status == 'failed' %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Failed</span>
+                            {% elif job.status == 'processing' %}
+                            <span class="badge bg-warning"><i class="bi bi-hourglass-split"></i> Processing</span>
+                            {% else %}
+                            <span class="badge bg-secondary"><i class="bi bi-clock"></i> Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="text-success">{{ job.records_processed }}</span>
+                        </td>
+                        <td>
+                            {% if job.records_failed > 0 %}
+                            <span class="text-danger">{{ job.records_failed }}</span>
+                            {% else %}
+                            <span class="text-muted">0</span>
+                            {% endif %}
+                        </td>
+                        <td><small>{{ job.started_at.strftime('%Y-%m-%d %H:%M:%S') if job.started_at else '-' }}</small></td>
+                        <td><small>{{ job.completed_at.strftime('%Y-%m-%d %H:%M:%S') if job.completed_at else '-' }}</small></td>
+                        <td>
+                            {% if job.error_message %}
+                            <span class="text-danger" title="{{ job.error_message }}">
+                                {{ job.error_message[:30] + '...' if job.error_message|length > 30 else job.error_message }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-list-task display-1"></i>
+            <p class="mt-3">No ingestion jobs yet. <a href="{{ url_for('ingest') }}">Upload a file</a> to get started.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

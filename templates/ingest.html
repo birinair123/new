@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Ingest Data - Data Ingestion{% endblock %}
+
+{% block content %}
+<h1 class="mb-4"><i class="bi bi-cloud-upload"></i> Ingest Data</h1>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-arrow-up"></i> Upload File</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Upload a CSV, JSON, or Excel file to import data in bulk.</p>
+                <form method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select File</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".csv,.json,.xlsx,.xls" required>
+                        <div class="form-text">Supported formats: CSV, JSON, Excel (.xlsx, .xls)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="source_name" class="form-label">Source Name (optional)</label>
+                        <input type="text" class="form-control" id="source_name" name="source_name" placeholder="e.g., Sales Data Q4">
+                        <div class="form-text">Leave blank to use filename as source</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Upload & Ingest
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Manual Entry</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Add a single data record manually.</p>
+                <form method="post" action="{{ url_for('ingest_manual') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="e.g., Monthly Revenue">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="value" class="form-label">Value</label>
+                            <input type="number" step="any" class="form-control" id="value" name="value" placeholder="e.g., 15000.50">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="category" name="category" placeholder="e.g., Finance">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="2" placeholder="Optional description..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="manual_source" class="form-label">Source Name</label>
+                        <input type="text" class="form-control" id="manual_source" name="source_name" value="Manual Entry">
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-plus-lg"></i> Add Record
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-info-circle"></i> File Format Requirements</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <h6>CSV Format</h6>
+                <pre class="bg-light p-2 rounded"><code>name,value,category,description
+Product A,100,Sales,First product
+Product B,200,Sales,Second product</code></pre>
+            </div>
+            <div class="col-md-4">
+                <h6>JSON Format</h6>
+                <pre class="bg-light p-2 rounded"><code>[
+  {"name": "Product A", "value": 100, "category": "Sales"},
+  {"name": "Product B", "value": 200, "category": "Sales"}
+]</code></pre>
+            </div>
+            <div class="col-md-4">
+                <h6>Excel Format</h6>
+                <p class="text-muted small">Excel files should have columns: <code>name</code>, <code>value</code>, <code>category</code>, <code>description</code></p>
+            </div>
+        </div>
+        <div class="alert alert-info mt-3 mb-0">
+            <i class="bi bi-lightbulb"></i> <strong>Tip:</strong> The <code>name</code> field is required. All other fields are optional.
+        </div>
+    </div>
+</div>
+{% endblock %}

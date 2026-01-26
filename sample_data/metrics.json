@@ -1,0 +1,12 @@
+[
+    {"name": "Daily Active Users", "value": 15420, "category": "Usage", "description": "Number of unique users per day"},
+    {"name": "Monthly Revenue", "value": 125000.50, "category": "Finance", "description": "Total revenue for the month"},
+    {"name": "Conversion Rate", "value": 3.2, "category": "Marketing", "description": "Percentage of visitors who convert"},
+    {"name": "Customer Satisfaction", "value": 4.5, "category": "Support", "description": "Average rating out of 5"},
+    {"name": "Page Load Time", "value": 1.8, "category": "Performance", "description": "Average page load time in seconds"},
+    {"name": "Error Rate", "value": 0.05, "category": "Performance", "description": "Percentage of requests resulting in errors"},
+    {"name": "New Signups", "value": 342, "category": "Growth", "description": "New user registrations this week"},
+    {"name": "Churn Rate", "value": 2.1, "category": "Growth", "description": "Monthly customer churn percentage"},
+    {"name": "Support Tickets", "value": 89, "category": "Support", "description": "Open support tickets"},
+    {"name": "API Calls", "value": 1250000, "category": "Usage", "description": "Total API calls this month"}
+]
