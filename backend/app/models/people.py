@@ -79,7 +79,7 @@ class PersonEmail(Base, UUIDMixin):
         return f"<PersonEmail {self.email}>"
 
 
-class PersonScore(Base, TimestampMixin):
+class PersonScore(Base):
     """Cached connection strength scores for a person."""
 
     __tablename__ = "person_scores"
@@ -96,6 +96,9 @@ class PersonScore(Base, TimestampMixin):
     last_meeting_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     next_meeting_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     first_interaction_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
 
     # Relationships
     person: Mapped["Person"] = relationship("Person", back_populates="score")
