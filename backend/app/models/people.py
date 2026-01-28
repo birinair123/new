@@ -34,7 +34,7 @@ class Person(Base, UUIDMixin, TimestampMixin):
     title: Mapped[Optional[str]] = mapped_column(Text)
     tags: Mapped[list] = mapped_column(ARRAY(Text), default=list)
     origin: Mapped[PersonOrigin] = mapped_column(
-        Enum(PersonOrigin, name="person_origin"),
+        Enum(PersonOrigin, name="person_origin", values_callable=lambda x: [e.value for e in x]),
         default=PersonOrigin.EMAIL_ONLY
     )
     is_tracked: Mapped[bool] = mapped_column(Boolean, default=False)

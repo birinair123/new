@@ -39,13 +39,13 @@ class Interaction(Base, UUIDMixin):
         UUID(as_uuid=False), ForeignKey("people.id", ondelete="CASCADE")
     )
     kind: Mapped[InteractionKind] = mapped_column(
-        Enum(InteractionKind, name="interaction_kind"), nullable=False
+        Enum(InteractionKind, name="interaction_kind", values_callable=lambda x: [e.value for e in x]), nullable=False
     )
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     end_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     direction: Mapped[Optional[str]] = mapped_column(Text)  # 'inbound', 'outbound'
     channel: Mapped[InteractionChannel] = mapped_column(
-        Enum(InteractionChannel, name="interaction_channel"), nullable=False
+        Enum(InteractionChannel, name="interaction_channel", values_callable=lambda x: [e.value for e in x]), nullable=False
     )
     subject: Mapped[Optional[str]] = mapped_column(Text)
     snippet: Mapped[Optional[str]] = mapped_column(Text)
