@@ -95,8 +95,8 @@ async def list_people(
     search: Optional[str] = None,
     tracked_only: bool = True,
     origin: Optional[str] = None,
-    sort_by: str = Query("score", regex="^(score|name|last_interaction|created)$"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$"),
+    sort_by: str = Query("score", pattern="^(score|name|last_interaction|created)$"),
+    sort_order: str = Query("desc", pattern="^(asc|desc)$"),
     db: Session = Depends(get_db),
     _: bool = Depends(get_current_user)
 ):
@@ -104,27 +104,25 @@ async def list_people(
     List people with filtering and pagination.
     Default shows only tracked (LinkedIn) + promoted people.
     """
-    query = db.query(Person).options(
-        joinedload(Person.emails),
-        joinedload(Person.score)
-    )
+    # Base query for filtering (without eager loading for count)
+    base_query = db.query(Person)
 
     # Filter by tracked status
     if tracked_only:
-        query = query.filter(Person.is_tracked == True)
+        base_query = base_query.filter(Person.is_tracked == True)
 
     # Filter by origin
     if origin:
         try:
             origin_enum = PersonOrigin(origin)
-            query = query.filter(Person.origin == origin_enum)
+            base_query = base_query.filter(Person.origin == origin_enum)
         except ValueError:
             pass
 
     # Search by name, email, or company
     if search:
         search_term = f"%{search}%"
-        query = query.filter(
+        base_query = base_query.filter(
             or_(
                 Person.full_name.ilike(search_term),
                 Person.primary_email.ilike(search_term),
@@ -132,29 +130,44 @@ async def list_people(
             )
         )
 
-    # Get total count
-    total = query.count()
+    # Get total count (before joins/eager loading)
+    total = base_query.count()
 
-    # Sorting
+    # Now build the query with sorting
     if sort_by == "score":
-        query = query.outerjoin(PersonScore)
+        base_query = base_query.outerjoin(PersonScore, Person.id == PersonScore.person_id)
         order_col = PersonScore.score_total
     elif sort_by == "name":
         order_col = Person.full_name
     elif sort_by == "last_interaction":
-        query = query.outerjoin(PersonScore)
+        base_query = base_query.outerjoin(PersonScore, Person.id == PersonScore.person_id)
         order_col = PersonScore.last_interaction_at
     else:
         order_col = Person.created_at
 
     if sort_order == "desc":
-        query = query.order_by(order_col.desc().nullslast())
+        base_query = base_query.order_by(order_col.desc().nullslast())
     else:
-        query = query.order_by(order_col.asc().nullsfirst())
+        base_query = base_query.order_by(order_col.asc().nullsfirst())
 
     # Pagination
     offset = (page - 1) * page_size
-    people = query.offset(offset).limit(page_size).all()
+
+    # Get IDs first, then load with relationships to avoid cartesian product
+    person_ids = [p.id for p in base_query.offset(offset).limit(page_size).all()]
+
+    # Now load full objects with relationships
+    if person_ids:
+        people = db.query(Person).options(
+            joinedload(Person.emails),
+            joinedload(Person.score)
+        ).filter(Person.id.in_(person_ids)).all()
+
+        # Re-sort since IN query doesn't preserve order
+        id_order = {pid: idx for idx, pid in enumerate(person_ids)}
+        people = sorted(people, key=lambda p: id_order.get(p.id, 0))
+    else:
+        people = []
 
     # Build response
     items = []
