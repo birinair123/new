@@ -47,8 +47,24 @@ class LinkedInIngester:
             raise FileNotFoundError(f"CSV file not found: {csv_path}")
 
         with open(csv_path, "r", encoding="utf-8-sig") as f:
-            # LinkedIn CSVs may have different column names
-            reader = csv.DictReader(f)
+            # LinkedIn CSVs have notes at the top - skip until we find the header
+            header_line = None
+            for line in f:
+                line = line.strip()
+                # Look for the actual header row (contains "First Name" or similar)
+                if line.startswith("First Name") or "First Name," in line:
+                    header_line = line
+                    break
+
+            if not header_line:
+                # Reset and try as normal CSV
+                f.seek(0)
+                reader = csv.DictReader(f)
+            else:
+                # Parse header and create reader from remaining lines
+                import io
+                remaining_content = header_line + "\n" + f.read()
+                reader = csv.DictReader(io.StringIO(remaining_content))
 
             # Normalize column names (handle variations)
             fieldnames = reader.fieldnames or []
