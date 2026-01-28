@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { Person } from '@/lib/api';
 import { ScoreBadge } from './ScoreBadge';
-import { formatRelativeDate, getInitials } from '@/lib/utils';
+import { getInitials } from '@/lib/utils';
+import { useRelativeDate } from '@/lib/useRelativeDate';
 import { Calendar, Clock } from 'lucide-react';
 
 interface PersonCardProps {
@@ -12,6 +13,7 @@ interface PersonCardProps {
 
 export function PersonCard({ person }: PersonCardProps) {
   const score = person.score?.score_total ?? 0;
+  const lastInteraction = useRelativeDate(person.score?.last_interaction_at ?? null);
 
   return (
     <Link href={`/people/${person.id}`} className="block">
@@ -39,10 +41,10 @@ export function PersonCard({ person }: PersonCardProps) {
 
             {/* Meta info */}
             <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
-              {person.score?.last_interaction_at && (
+              {person.score?.last_interaction_at && lastInteraction && (
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  {formatRelativeDate(person.score.last_interaction_at)}
+                  {lastInteraction}
                 </span>
               )}
               {person.score?.next_meeting_at && (

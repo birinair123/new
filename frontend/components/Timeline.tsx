@@ -1,7 +1,8 @@
 'use client';
 
 import { Interaction } from '@/lib/api';
-import { cn, formatMeetingDate, getInteractionIcon, getInteractionLabel } from '@/lib/utils';
+import { cn, getInteractionIcon, getInteractionLabel } from '@/lib/utils';
+import { useMeetingDate } from '@/lib/useRelativeDate';
 
 interface TimelineProps {
   interactions: Interaction[];
@@ -26,6 +27,8 @@ export function Timeline({ interactions }: TimelineProps) {
 }
 
 function TimelineItem({ interaction }: { interaction: Interaction }) {
+  const formattedDate = useMeetingDate(interaction.occurred_at);
+
   const dotClass = cn('timeline-dot', {
     'timeline-dot-meeting': interaction.kind === 'meeting',
     'timeline-dot-email-in': interaction.kind === 'email_in',
@@ -47,7 +50,7 @@ function TimelineItem({ interaction }: { interaction: Interaction }) {
         </div>
 
         <p className="text-xs text-gray-500 mt-0.5">
-          {formatMeetingDate(interaction.occurred_at)}
+          {formattedDate}
         </p>
 
         {interaction.subject && (

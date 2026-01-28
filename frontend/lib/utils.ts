@@ -6,6 +6,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Note: These date functions use current time. Components using them should
+// be marked 'use client' and use useEffect/useState to avoid hydration mismatch.
 export function formatRelativeDate(dateString: string | null): string {
   if (!dateString) return 'Never';
   const date = new Date(dateString);
@@ -26,6 +28,13 @@ export function formatMeetingDate(dateString: string): string {
   }
 
   return format(date, 'MMM d, yyyy h:mm a');
+}
+
+// Safe version that returns a stable format for SSR, then updates on client
+export function formatRelativeDateSafe(dateString: string | null): string {
+  if (!dateString) return 'Never';
+  // Return a stable date format that won't cause hydration mismatch
+  return format(new Date(dateString), 'MMM d, yyyy');
 }
 
 export function formatDate(dateString: string | null): string {

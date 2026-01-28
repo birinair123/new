@@ -7,7 +7,8 @@ import { api, Person, InteractionsListResponse } from '@/lib/api';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { ScoreBreakdown } from '@/components/ScoreBreakdown';
 import { Timeline } from '@/components/Timeline';
-import { formatRelativeDate, formatDate, getInitials } from '@/lib/utils';
+import { formatDate, getInitials } from '@/lib/utils';
+import { useRelativeDate } from '@/lib/useRelativeDate';
 import {
   ArrowLeft,
   Calendar,
@@ -35,6 +36,8 @@ export default function PersonDetailPage() {
     personId ? ['timeline', personId] : null,
     () => api.getPersonTimeline(personId)
   );
+
+  const lastContact = useRelativeDate(person?.score?.last_interaction_at ?? null);
 
   const handleAddTag = async () => {
     if (!newTag.trim()) return;
@@ -172,7 +175,7 @@ export default function PersonDetailPage() {
           <div className="card p-3">
             <p className="text-xs text-gray-500 uppercase tracking-wide">Last Contact</p>
             <p className="text-sm font-medium text-gray-900 mt-1">
-              {formatRelativeDate(person.score?.last_interaction_at)}
+              {lastContact || 'Never'}
             </p>
           </div>
           <div className="card p-3">
