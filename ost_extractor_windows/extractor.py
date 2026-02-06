@@ -563,16 +563,24 @@ class OutlookExtractor:
 
 def main():
     parser = argparse.ArgumentParser(description="Outlook OST Extractor")
-    parser.add_argument("command", choices=["calendar", "emails", "all"],
-                        help="What to extract")
-    parser.add_argument("--output", "-o", required=True,
-                        help="Output directory for JSONL files")
+    parser.add_argument("command", choices=["calendar", "emails", "all", "info"],
+                        help="What to extract (use 'info' to show connected accounts)")
+    parser.add_argument("--output", "-o",
+                        help="Output directory for JSONL files (required except for 'info')")
     parser.add_argument("--days", type=int, default=365,
                         help="Days of history to extract (default: 365)")
     parser.add_argument("--days-forward", type=int, default=90,
                         help="Days of future calendar to extract (default: 90)")
 
     args = parser.parse_args()
+
+    # Info command doesn't need output dir
+    if args.command == "info":
+        show_outlook_info()
+        return
+
+    if not args.output:
+        parser.error("--output is required for calendar/emails/all commands")
 
     output_dir = Path(args.output)
     extractor = OutlookExtractor(output_dir)
@@ -594,6 +602,64 @@ def main():
 
     finally:
         extractor.cleanup()
+
+
+def show_outlook_info():
+    """Display diagnostic info about connected Outlook accounts."""
+    pythoncom.CoInitialize()
+
+    try:
+        outlook = win32com.client.Dispatch("Outlook.Application")
+        namespace = outlook.GetNamespace("MAPI")
+
+        print("\n=== Outlook Connection Info ===\n")
+
+        # Current user
+        try:
+            print(f"Current User: {namespace.CurrentUser.Name}")
+            print(f"Current User Address: {namespace.CurrentUser.Address}")
+        except Exception as e:
+            print(f"Could not get current user: {e}")
+
+        # List all stores (accounts/OST files)
+        print("\n--- Connected Stores/Accounts ---")
+        for i, store in enumerate(namespace.Stores, 1):
+            try:
+                print(f"\n  Store {i}: {store.DisplayName}")
+                print(f"    File Path: {store.FilePath}")
+                print(f"    Store Type: {store.ExchangeStoreType}")
+            except Exception as e:
+                print(f"  Store {i}: Error reading details - {e}")
+
+        # List calendar folders
+        print("\n--- Calendar Folders ---")
+        FOLDER_CALENDAR = 9
+
+        # Default calendar
+        try:
+            default_cal = namespace.GetDefaultFolder(FOLDER_CALENDAR)
+            print(f"\n  Default Calendar: {default_cal.Name}")
+            print(f"    Items: {default_cal.Items.Count}")
+        except Exception as e:
+            print(f"  Default Calendar: Error - {e}")
+
+        # Calendars in each store
+        for store in namespace.Stores:
+            try:
+                root = store.GetRootFolder()
+                for folder in root.Folders:
+                    if folder.DefaultItemType == 1:  # olAppointmentItem
+                        print(f"\n  Calendar: {store.DisplayName} / {folder.Name}")
+                        print(f"    Items: {folder.Items.Count}")
+            except:
+                pass
+
+        print("\n")
+
+    except com_error as e:
+        print(f"Failed to connect to Outlook: {e}")
+    finally:
+        pythoncom.CoUninitialize()
 
 
 if __name__ == "__main__":
